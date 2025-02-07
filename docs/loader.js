@@ -1,13 +1,16 @@
 (function() {
-  // Set a flag to indicate the loader has executed
+  // Initialize the loader flag to false.
   window.__catalystLoaderStatus = false;
-
-  const apiUrl = 'http://localhost:3000'; // Replace with your production backend URL as needed
+  
+  // Define your backend API URL (update for production if needed).
+  const apiUrl = 'http://localhost:3000';
   const currentUrl = encodeURIComponent(window.location.href);
   
+  // Fetch SEO data for the current page.
   fetch(`${apiUrl}/get-seo-data?url=${currentUrl}`)
     .then(response => response.json())
     .then(data => {
+      // Optionally update the page (for example, document title and meta description).
       if (data && Object.keys(data).length > 0) {
         if (data.title) {
           document.title = data.title;
@@ -22,17 +25,19 @@
           metaDesc.content = data.metaDescription;
         }
       }
-      // Mark loader as executed
+      // Mark that the loader has executed.
       window.__catalystLoaderStatus = true;
-      // Optionally, add a hidden element for testing
-      const statusEl = document.createElement('div');
-      statusEl.id = 'catalyst-loader-status';
-      statusEl.style.display = 'none';
-      statusEl.innerText = 'loaded';
-      document.body.appendChild(statusEl);
+      // Create a hidden marker element to signal that the loader is active.
+      if (!document.getElementById('catalyst-loader-status')) {
+        const marker = document.createElement('div');
+        marker.id = 'catalyst-loader-status';
+        marker.style.display = 'none';
+        marker.innerText = 'loader-active';
+        document.body.appendChild(marker);
+      }
     })
     .catch(error => {
-      console.error('Error fetching SEO data:', error);
+      console.error('Error in loader.js:', error);
       window.__catalystLoaderStatus = false;
     });
 })();
